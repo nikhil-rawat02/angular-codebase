@@ -1,0 +1,117 @@
+<div class="px-4 w-full flex flex-col" style="height: 100vh">
+  <!-- Controls -->
+  <div class="flex justify-end gap-1">
+    <!-- Toggle Edit/View Button -->
+    <div class="flex items-center gap-2 mb-4" [ngClass]="editable() ? '' : 'pr-2'">
+      <button
+        (click)="toggleEditable()"
+        class="inline-flex rounded-full border border-gray-300 overflow-hidden"
+      >
+        <!-- View Icon Button -->
+        <div
+          class="px-3 py-2 flex items-center justify-center"
+          [ngClass]="{
+            'bg-white text-gray-700': editable(),
+            'bg-gray-200 text-black': !editable()
+          }"
+        >
+          <i class="fas fa-eye"></i>
+        </div>
+
+        <!-- Edit Icon Button -->
+        <div
+          class="px-3 py-2 flex items-center justify-center"
+          [ngClass]="{
+            'bg-gray-200 text-black': editable(),
+            'bg-white text-gray-700': !editable()
+          }"
+        >
+          <i class="fas fa-pen"></i>
+        </div>
+      </button>
+    </div>
+
+    <button
+      *ngIf="editable()"
+      class="px-3 py-2 bg-green-500 h-8 text-white rounded-full hover:bg-green-600 flex items-center justify-center"
+      (click)="saveLayout()"
+      aria-label="Save Layout"
+      title="Save Layout"
+    >
+      <i class="fas fa-save"></i>
+    </button>
+    <button
+      *ngIf="editable()"
+      class="px-4 bg-blue-500 h-8 rounded-full text-white hover:bg-blue-600"
+      (click)="addWidget()"
+    >
+      Widgets
+    </button>
+  </div>
+
+  <!-- Dashboard Container -->
+  <div class="flex-grow w-full relative h-screen">
+    <gridster
+      [options]="options"
+      class="w-full h-full"
+      [ngClass]="editable() ? 'bg-gray-200' : 'bg-white padding-0'"
+    >
+      <gridster-item *ngFor="let widget of widgets()" [item]="widget">
+        <div
+          class="bg-white p-2 shadow-2xl h-full flex flex-col border border-gray-200"
+        >
+          <!-- Header -->
+          <div
+            class="flex justify-between items-center mb-2 z-10"
+            *ngIf="editable()"
+          >
+            <select
+              class="p-1 border rounded z-20 pointer-events-auto no-drag"
+              (change)="changeChartType(widget, $event)"
+              [value]="widget.type"
+              (click)="$event.stopPropagation()"
+            >
+              <option value="bar">Bar</option>
+              <option value="line">Line</option>
+              <option value="area">Area</option>
+              <option value="pie">Pie</option>
+            </select>
+
+            <button
+              class="p-1 text-red-500 hover:text-red-700 z-10"
+              (click)="removeWidget(widget.id); $event.stopPropagation()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Chart Container -->
+          <div
+            class="flex-grow no-drag"
+            style="height: calc(100% - 40px); min-height: 200px"
+          >
+            <apx-chart
+              [series]="chartOptions()[widget.id]?.series || []"
+              [chart]="chartOptions()[widget.id]?.chart || { type: 'bar' }"
+              [xaxis]="chartOptions()[widget.id]?.xaxis || {}"
+              [labels]="chartOptions()[widget.id]?.labels || []"
+              class="w-full h-full"
+            >
+            </apx-chart>
+          </div>
+        </div>
+      </gridster-item>
+    </gridster>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+.custom-hover {
+  @apply hover:bg-gray-100 hover:text-black items-center cursor-pointer rounded text-sm font-medium;
+}
+
+.submenu-hover {
+  @apply hover:bg-gray-100 hover:text-black cursor-pointer font-medium;
+}
+
+.active {
+  @apply bg-gray-100 border-skyblue text-black cursor-pointer rounded;
+}
+
+/* New rules for icon switching on active */
+li.active .active-hidden {
+  display: none;
+}
+
+li.active .active-block {
+  display: block;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 4px;
+}

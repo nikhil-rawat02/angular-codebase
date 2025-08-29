@@ -1,0 +1,56 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.gridster-container {
+  width: 100% !important;
+  height: 100% !important;
+  background-color: white !important;
+}
+
+apx-chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+}
+
+.gridster-item {
+  overflow: visible !important;
+}
+
+.gridster-item-content {
+  overflow: visible !important;
+}
+
+/* Ensure drag handle covers the entire widget */
+.drag-handle {
+  cursor: move;
+  position: relative;
+}
+
+/* Prevent specific elements from initiating drag */
+.no-drag {
+  pointer-events: none;
+}
+
+.pointer-events-auto{
+  pointer-events: auto !important;
+}
+
+/* Make select elements interactive again */
+.no-drag select {
+  pointer-events: all;
+}
+
+/* Make buttons interactive again */
+.no-drag button {
+  pointer-events: all;
+}
+
+.padding-0{
+  padding-top: 0 !important;
+}

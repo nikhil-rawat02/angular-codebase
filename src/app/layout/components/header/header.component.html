@@ -1,0 +1,28 @@
+<header
+  class="bg-white p-7 flex justify-between text-[#101828] items-center border-lightGray text-xl font-semibold text-center md:text-left"
+>
+  <img
+    src="assets/img/toggle.png"
+    class="w-5 h-4 cursor-pointer"
+    alt="logout_icon"
+    (click)="onToggle()"
+  />
+  <img
+    title="Logout"
+    src="assets/img/logout.png"
+    class="w-5 h-5 cursor-pointer"
+    alt="logout_icon"
+    (click)="onLogout()"
+  />
+</header>
+
+<app-modal
+  [closeText]="'No'"
+  [loading]="loading"
+  [actionText]="'Yes, Logout'"
+  [isOpen]="isModalOpen"
+  [modalAction]="handleLogout"
+  (closeModal)="closeModal()"
+>
+  <p>Are you sure you want to logout?</p>
+</app-modal>

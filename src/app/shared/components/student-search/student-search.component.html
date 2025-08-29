@@ -1,0 +1,31 @@
+<div class="flex gap-3">
+  <div class="w-1/3">
+    <input
+      type="text"
+      id="registrationNo"
+      list="registrationNoList"
+      placeholder="Student Id- Ex: AU1-DEPTUGN-14206/25"
+      [formControl]="registrationNo"
+      class="w-full border border-gray-300 rounded-md px-3 py-2"
+    />
+    @if (registrationNo.touched && registrationNo.invalid) {
+    <p class="validation">Registration No. is required</p>
+    }
+    <datalist id="registrationNoList">
+      @for(item of registrationNumbers(); track $index){
+      <option [value]="item"></option>
+      }
+    </datalist>
+  </div>
+
+  <div class="flex flex-1 justify-between">
+    <div class="flex gap-2">
+      <button type="submit" class="btn-primary h-10" (click)="onFind()">
+        Find
+      </button>
+      <button type="reset" (click)="onReset()" class="btn-secondary h-10">
+        Reset
+      </button>
+    </div>
+  </div>
+</div>

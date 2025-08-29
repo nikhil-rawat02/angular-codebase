@@ -1,0 +1,151 @@
+<!-- <div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-8 rounded-2xl shadow-lg text-center w-96">
+    <div class="flex justify-center">
+      <img
+        src="assets/img/logomark.png"
+        alt="Lock Icon"
+        width="50"
+        height="50"
+        class="mb-3"
+      />
+    </div>
+
+    
+  </div>
+</div> -->
+
+<div class="flex min-h-screen">
+  <!-- Left Section (Login Form) -->
+  <div class="w-full md:w-[50%] flex items-center justify-center bg-white mb-6">
+    <div class="w-full max-w-md p-6">
+      <!-- Logo and Header -->
+      <!-- <div class="flex absolute top-4 left-8 gap-3 mb-6">
+        <img src="assets/img/logo.png" alt="SSR Logo" class="w-full h-16" />
+      </div> -->
+
+      <div class="flex flex-col items-center mb-6">
+        <img
+          src="assets/img/logo.png"
+          alt="User Icon"
+          class="w-24 h-24"
+        />
+        <h2 class="text-lg font-semibold mt-4">Verify your email</h2>
+        <p class="text-gray-500 text-center text-sm mt-1">
+          A verification code has been sent to your mobile number
+          <span class="font-semibold"></span>, please enter below to verify your
+          account.
+        </p>
+      </div>
+
+      <!-- Verification Code Inputs -->
+      <form [formGroup]="verifyForm" (ngSubmit)="submitCode()" class="mt-4">
+        <div class="flex justify-center space-x-3">
+          <input
+            title="digit"
+            type="text"
+            maxlength="1"
+            class="w-14 h-14 text-center border rounded-lg text-lg focus:ring focus:ring-blue-500 outline-none"
+            formControlName="digit1"
+            #digit1
+            (input)="moveToNext($event, digit2)"
+          />
+          <input
+            title="digit"
+            type="text"
+            maxlength="1"
+            class="w-14 h-14 text-center border rounded-lg text-lg focus:ring focus:ring-blue-500 outline-none"
+            formControlName="digit2"
+            #digit2
+            (input)="moveToNext($event, digit3)"
+          />
+          <input
+            title="digit"
+            type="text"
+            maxlength="1"
+            class="w-14 h-14 text-center border rounded-lg text-lg focus:ring focus:ring-blue-500 outline-none"
+            formControlName="digit3"
+            #digit3
+            (input)="moveToNext($event, digit4)"
+          />
+          <input
+            title="digit"
+            type="text"
+            maxlength="1"
+            class="w-14 h-14 text-center border rounded-lg text-lg focus:ring focus:ring-blue-500 outline-none"
+            formControlName="digit4"
+            #digit4
+            (input)="moveToNext($event, digit5)"
+          />
+          <input
+            title="digit"
+            type="text"
+            maxlength="1"
+            class="w-14 h-14 text-center border rounded-lg text-lg focus:ring focus:ring-blue-500 outline-none"
+            formControlName="digit5"
+            #digit5
+            (input)="moveToNext($event, digit6)"
+          />
+          <input
+            title="digit"
+            type="text"
+            maxlength="1"
+            class="w-14 h-14 text-center border rounded-lg text-lg focus:ring focus:ring-blue-500 outline-none"
+            formControlName="digit6"
+            #digit6
+          />
+        </div>
+
+        <small class="text-red-500">
+          @if (errorMsg()) {
+            {{ errorMsg() }}
+          }
+        </small>
+
+        <!-- Confirm Button -->
+        <button
+          type="submit"
+          class="btn-primary mt-5 w-full"
+          [disabled]="verifyForm.invalid || loading()"
+        >
+          @if (!loading()) {
+            Confirm verification code
+          } @else {
+            <app-spinner></app-spinner>
+          }
+        </button>
+      </form>
+
+      <p class="text-gray-500 text-sm mt-3">
+        Didn’t get the code?
+        <a href="#" class="text-blue-600">Forgot password</a>
+      </p>
+
+      <!-- Footer -->
+      <div
+        class="mt-6 text-sm absolute bottom-0 left-0 w-[50%] py-4 px-8 text-gray-500 flex justify-between"
+      >
+        <span>© 2024 UMS</span>
+        <span><i class="fa fa-globe"></i> ENG</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Section -->
+  <div
+    class="hidden md:block w-[50%] relative bg-cover bg-center"
+    style="background-image: url('assets/img/login-bg.jpg')"
+  >
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-gray-900 bg-opacity-65"></div>
+
+    <!-- Quote Box -->
+    <div
+      class="absolute bottom-[5%] right-[18%] max-w-lg backdrop-blur-md bg-white/20 border border-white/30 text-white rounded-lg shadow-lg p-4"
+    >
+      <p class="text-md font-bold leading-relaxed">
+        Track performance, onboard instructors, assign roles, and unlock tools
+        that help your school scale effortlessly.
+      </p>
+    </div>
+  </div>
+</div>

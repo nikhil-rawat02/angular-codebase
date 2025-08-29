@@ -1,0 +1,155 @@
+<!-- Search Bar -->
+<div class="flex gap-x-4 mb-4 justify-end w-full">
+  <div
+    *ngIf="!!totalText"
+    class="text-md font-semibold w-1/5 flex items-baseline gap-2"
+  >
+    {{ totalText }}
+    <span class="font-bold text-sm bg-skyblue text-white rounded-full px-4">{{
+      total
+    }}</span>
+  </div>
+
+  <div class="relative w-1/5" *ngIf="isSearch">
+    <img
+      alt="search"
+      src="assets/img/search.png"
+      class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 pointer-events-none"
+    />
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearch()"
+      placeholder="Search by name"
+      class="pl-10 pr-2 py-2 w-full rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+    />
+  </div>
+
+  <span class="w-4/5 flex gap-4 justify-end">
+    <!-- Dynamic Input -->
+    <ng-content select="[custom-input]"></ng-content>
+  </span>
+</div>
+
+<div *ngIf="loading" class="space-y-4 animate-pulse">
+  <!-- Skeleton Table -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white rounded-lg">
+      <thead>
+        <tr>
+          <th class="py-4" colspan="100%">
+            <div class="h-10 bg-gray-200 rounded w-full"></div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of [].constructor(5)">
+          <td
+            *ngFor="let j of [].constructor(4); let idx = index"
+            [ngClass]="{
+              'pl-0 pr-6': idx === 0,
+              'pr-0 pl-6': idx === 3,
+              'px-3': idx !== 0 && idx !== 3
+            }"
+            class="py-3"
+          >
+            <div class="h-7 bg-gray-200 rounded w-full"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="overflow-x-auto" *ngIf="!loading">
+  @if (displayedData.length) {
+  <table class="min-w-full bg-white rounded-lg text-sm md:text-base">
+    <thead>
+      <tr class="text-left text-sm text-skyblue border-b">
+        <!-- First header cell for "select all" checkbox -->
+        <th class="py-3 px-4">
+          <input
+            title="select"
+            type="checkbox"
+            [checked]="allSelected"
+            (change)="toggleAll($event)"
+          />
+        </th>
+
+        <!-- Rest of the header columns -->
+        <th *ngFor="let column of columns" class="py-3 px-4 whitespace-nowrap">
+          {{ column.label }}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr
+        class="border-b hover:bg-gray-50 transition"
+        *ngFor="let row of displayedData"
+      >
+        <!-- First column: checkbox -->
+        <td class="py-3 px-4">
+          <input
+            title="select"
+            type="checkbox"
+            [checked]="isSelected(row)"
+            (change)="toggleSelection($event, row)"
+          />
+        </td>
+
+        <!-- Data cells from rowTemplate -->
+        <ng-container
+          [ngTemplateOutlet]="rowTemplate"
+          [ngTemplateOutletContext]="{ $implicit: row }"
+        ></ng-container>
+      </tr>
+    </tbody>
+  </table>
+  } @else {
+  <p class="text-center">No records found</p>
+  }
+</div>
+
+<!-- Pagination -->
+<div
+  class="flex flex-col md:flex-row justify-between items-center mt-5"
+  *ngIf="total > 0 && isPagination"
+>
+  <button
+    (click)="previousPage()"
+    [disabled]="currentPage === 1"
+    class="px-3 py-1 bg-white border rounded-lg mb-2 md:mb-0 hover:text-skyblue hover:border-skyblue"
+  >
+    Previous
+  </button>
+  <div class="flex flex-wrap justify-center">
+    <button
+      *ngFor="let page of visiblePages"
+      (click)="goToPage(page)"
+      class="px-3 py-1 mx-1 bg-gray-200 rounded-lg"
+      [ngClass]="{
+        'text-skyblue bg-white border border-skyblue': currentPage === page
+      }"
+    >
+      {{ page }}
+    </button>
+    <span *ngIf="showEllipsis" class="px-3 py-1 mx-1">...</span>
+    <button
+      *ngIf="totalPages > maxPageLimit"
+      (click)="goToPage(totalPages)"
+      class="px-3 py-1 mx-1 bg-gray-200 rounded-lg"
+      [ngClass]="{ 'bg-blue-500 text-white': currentPage === totalPages }"
+    >
+      {{ totalPages }}
+    </button>
+  </div>
+  <button
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages"
+    class="px-3 py-1 bg-white border rounded-lg mt-2 md:mt-0 hover:text-skyblue hover:border-skyblue"
+  >
+    Next
+  </button>
+</div>

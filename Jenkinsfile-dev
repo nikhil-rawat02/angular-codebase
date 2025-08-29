@@ -1,0 +1,121 @@
+pipeline {
+    agent {
+        node {
+            label 'mhealthvm'
+        }
+    }
+    environment {
+	    TEAM_NOC = "shanur@vivatechrnd.com,k.sujith@vivatechrnd.com"
+        TEAM_DEV =  "joy@vivatechrnd.com,javed@vivatechrnd.com,rashid@vivatechrnd.com,sasianand@vivatechrnd.com,nikhil@vivatechrnd.com"
+        APPLICATION_COMPONENT = "FRONTEND"
+        APPLICATION_NAME = "ums"
+        CONFIG_FILE = "assets/config.json"
+        REMOTE_USER = "core"
+        SFTP_REMOTE_HOST = "139.84.167.86"
+        SFTP_REMOTE_DIR = "/usr/share/nginx/ums"
+        REMOTE_DEPL_HOST = "139.84.167.86"
+        REMOTE_DEPL_DIR = "/usr/share/nginx/ums"
+        DEPLOYMENT_NAME = "ROOT"
+        GIT_COMMIT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        GIT_AUTHOR = sh(script: "git log -1 --pretty=format:'%an <%ae>'", returnStdout: true).trim()
+        APP_VERSION = sh(script: """
+					grep version package.json | tr '\",' ' ' |cut -d ':' -f2
+				""", returnStdout: true).trim()
+    }
+    options {
+        timestamps()
+        buildDiscarder logRotator(numToKeepStr: '5')
+        disableConcurrentBuilds abortPrevious: true
+    }
+    stages{
+        stage('Set Environment Variables') {
+            steps {
+                script {
+                    env.SERVICE_NAME = sh(
+                        script: '''#!/bin/bash
+                            echo "$JOB_NAME" | cut -d'/' -f2
+                        ''',
+                        returnStdout: true
+                    ).trim()
+                }
+            }
+        }
+        stage('Build & compress') {
+            steps {
+                sh """
+                    docker build -t "${env.SERVICE_NAME}-${env.BUILD_NUMBER}" .
+                    docker create --name "${env.SERVICE_NAME}" "${env.SERVICE_NAME}-${env.BUILD_NUMBER}"
+                    docker cp "${env.SERVICE_NAME}:/output/dist" ./dist
+                    docker rm "${env.SERVICE_NAME}"
+                    docker rmi "${env.SERVICE_NAME}-${env.BUILD_NUMBER}"
+                """
+            }
+        }
+        stage('Upload to storage Repo') {
+            steps {
+              script {
+                sh "mv -v dist ${env.SERVICE_NAME}-${env.APP_VERSION}"
+                sh "tar -zcf ${env.SERVICE_NAME}-${env.BUILD_NUMBER}-${APP_VERSION}.tar.gz ${env.SERVICE_NAME}-${env.APP_VERSION}"
+                sh "scp ${env.SERVICE_NAME}-${env.BUILD_NUMBER}-${APP_VERSION}.tar.gz ${env.REMOTE_USER}@${env.SFTP_REMOTE_HOST}:${env.SFTP_REMOTE_DIR}/"
+              }
+            }
+        }
+        stage('Deployment') {
+            steps {
+		        script {
+			        withCredentials([sshUserPrivateKey(credentialsId: 'mhealthvmdeployssh', keyFileVariable: 'SSH_KEY', usernameVariable: 'REMOTE_USER')]) {
+                        sh """
+                            ssh -i \$SSH_KEY -o StrictHostKeyChecking=no "\${REMOTE_USER}@\${REMOTE_DEPL_HOST}" '
+                                cd ${REMOTE_DEPL_DIR} &&
+                                tar -zxf ${env.SERVICE_NAME}-${env.BUILD_NUMBER}-${env.APP_VERSION}.tar.gz &&
+                                SRC="${env.SERVICE_NAME}/${CONFIG_FILE}" &&
+                                DST="${env.SERVICE_NAME}-${env.APP_VERSION}/${CONFIG_FILE}" &&
+                                    if [ -f "\$SRC" ]; then
+                                        if [ "\$(realpath "\$SRC")" != "\$(realpath "\$DST")" ]; then
+                                            cp -v "\$SRC" "\$DST"
+                                        else
+                                            echo "Skipping cp: \$SRC and \$DST are the same file"
+                                        fi
+                                        rm -rfv ${env.SERVICE_NAME}
+                                    else
+                                    echo "Making New Deployment"
+                                    fi && 
+                                ln -sv ${env.SERVICE_NAME}-${env.APP_VERSION} ${env.SERVICE_NAME}'
+                        """
+                	}
+            	}
+            }
+		}
+    }
+    post {
+        always {
+            emailext(
+                subject: "Build ${currentBuild.currentResult}: ${env.JOB_NAME} #${env.GIT_COMMIT}",
+                mimeType: 'text/html',
+                body: """
+<html>
+<body>
+        <h2>${env.JOB_NAME} ${env.BUILD_NUMBER} - ${currentBuild.currentResult} Notification</h2>
+
+        <p><b>Branch:</b> ${env.GIT_BRANCH}</p>
+        <p><b>Commit:</b> ${env.GIT_COMMIT}</p>
+        <p><b>Author:</b> ${env.GIT_AUTHOR}</p>
+        <p><b>ComponentType:</b> ${env.APPLICATION_COMPONENT}</p>
+        <p><b>Deploy Host:</b> ${env.REMOTE_DEPL_HOST}</p>
+        <p><b>Deployment Status:</b> ${currentBuild.currentResult}</p>
+        <p><b>Build URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+        <p><a href="${env.BUILD_URL}console">View Console Output</a></p>
+
+        <p style="color: #888">Dont make any changes to the pipeline</p>
+
+</body>
+</html>
+""",
+                to: "${env.TEAM_NOC}",
+                recipientProviders: [buildUser(), upstreamDevelopers()]
+            )
+            cleanWs()
+        }
+
+    }
+}

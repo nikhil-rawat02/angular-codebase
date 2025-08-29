@@ -1,0 +1,24 @@
+<!-- Background Blur Overlay -->
+<div 
+  *ngIf="isPickerOpen" 
+  class="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-md z-40"
+  (click)="togglePicker(false)">
+</div>
+
+<!-- Date Picker Input -->
+<div class="relative z-50" [ngClass]="{ 'picker-open': isPickerOpen }">
+  <input
+    type="text"
+    ngxDaterangepickerMd
+    [(ngModel)]="selected"
+    [showCustomRangeLabel]="true"
+    [alwaysShowCalendars]="true"
+    [ranges]="ranges"
+    [linkedCalendars]="true"
+    [showClearButton]="true"
+    (datesUpdated)="onApply()"
+    (click)="togglePicker(true)"
+    placeholder="Select date"
+    class="border p-2  rounded-lg cursor-pointer"
+  />
+</div>

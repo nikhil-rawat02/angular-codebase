@@ -1,0 +1,39 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import "ngx-toastr/toastr";
+@import '~@ng-select/ng-select/themes/default.theme.css';
+
+label {
+  @apply block text-gray-700 text-sm font-medium mb-1;
+}
+
+input,
+select,
+textarea {
+  @apply w-full p-2 border rounded-lg focus:ring-1 focus:ring-blue-300 outline-none;
+}
+
+.required::after {
+  content: '*';
+  color: red;
+}
+
+/* Custom scrollbar for WebKit browsers */
+::-webkit-scrollbar {
+  width: 6px; /* Adjust width here */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0; /* Gray-400 */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::ng-deep ng-select .ng-select-container {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}

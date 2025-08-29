@@ -1,0 +1,23 @@
+<div class="relative z-50" [ngClass]="{ 'filter-open': isFilterOpen }">
+  <button
+    type="button"
+    class="border p-2 rounded-[10px] cursor-pointer w-24 flex items-center justify-center"
+    (click)="toggleReportFilter(true)"
+  >
+    <img src="assets/img/Vector.png" class="mr-2" />
+    Filter
+  </button>
+</div>
+
+<app-modal
+  [title]="'Filter'"
+  [width]="width"
+  [isOpen]="isFilterOpen"
+  [resetForm]="'Reset'"
+  [onReset]="reset.bind(this)"
+  [actionText]="'Apply Filter'"
+  [modalAction]="onSubmit"
+  (closeModal)="closeModal()"
+>
+    <ng-content></ng-content>
+</app-modal>

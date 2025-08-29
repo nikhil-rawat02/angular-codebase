@@ -1,0 +1,17 @@
+<div class="p-4 rounded-lg shadow bg-white flex items-center w-full">
+  <!-- <div class="p-3 rounded-full" [ngClass]="bgColor">
+      <i class="text-white" [ngClass]="icon"></i>
+    </div> -->
+  <div class="flex flex-col w-full gap-3">
+    <span class="flex gap-2 align-center">
+      <img [src]="icon" alt="" width="30" />
+      <p class="text-gray-500 text-sm">{{ title }}</p>
+    </span>
+    <div class="flex justify-between items-center w-full">
+      <p class="text-3xl font-bold">{{ value }}</p>
+      <!-- <p class="bg-green-100 text-sm px-3 py-1 rounded-md text-green-600">
+        {{ percentage }} ↑
+      </p> -->
+    </div>
+  </div>
+</div>

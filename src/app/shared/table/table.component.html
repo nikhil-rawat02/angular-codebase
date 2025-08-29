@@ -1,0 +1,152 @@
+<!-- Search Bar -->
+<div class="flex gap-x-4 mb-4 justify-end w-full">
+  @if (!!totalText) {
+  <div class="text-md font-semibold w-1/5 flex items-baseline gap-2">
+    {{ totalText }}
+    <span class="font-bold text-sm bg-skyblue text-white rounded-full px-4">
+      {{ total }}
+    </span>
+  </div>
+  } @if (isSearch) {
+  <div class="relative w-1/5">
+    <img
+      src="assets/img/search.png"
+      class="absolute left-4 top-[50%] transform -translate-y-1/2 w-4 h-4 pointer-events-none"
+    />
+
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearch()"
+      placeholder="Search by name"
+      class="pl-10 pr-2 py-2 w-full rounded-lg border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+    />
+  </div>
+  }
+
+  <span class="w-4/5 flex gap-4 justify-end">
+    <!-- Dynamic Input -->
+    <ng-content select="[custom-input]"></ng-content>
+
+    @if (isDateFilter) {
+    <app-date-filter
+      class="w-1/5"
+      (dateRangeSelected)="onDateRangeSelected($event)"
+    ></app-date-filter>
+    }
+  </span>
+</div>
+
+<!-- Skeleton Loader -->
+@if (loading) {
+<div class="space-y-4 animate-pulse">
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white rounded-lg">
+      <thead>
+        <tr>
+          <th class="py-4" colspan="100%">
+            <div class="h-10 bg-gray-200 rounded w-full"></div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (i of [].constructor(5); track i) {
+        <tr>
+          @for (j of [].constructor(4); track j; let idx = $index) {
+          <td
+            [ngClass]="{
+              'pl-0 pr-6': idx === 0,
+              'pr-0 pl-6': idx === 3,
+              'px-3': idx !== 0 && idx !== 3
+            }"
+            class="py-3"
+          >
+            <div class="h-7 bg-gray-200 rounded w-full"></div>
+          </td>
+          }
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+}
+
+<!-- Table -->
+@if (!loading) { @if (displayedData.length) {
+<div class="overflow-x-auto">
+  <table class="min-w-full bg-white rounded-lg text-sm md:text-base">
+    <thead>
+      <tr class="text-left text-sm text-skyblue border-b">
+        @for (column of columns; track column.field) {
+        <th class="py-3 px-4 whitespace-nowrap">
+          {{ column.label }}
+        </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of displayedData; track row; let i = $index) {
+      <ng-container
+        [ngTemplateOutlet]="rowTemplate"
+        [ngTemplateOutletContext]="{ $implicit: row, index: i }"
+      >
+      </ng-container>
+      } @if(customRowTemplate){
+      <ng-container [ngTemplateOutlet]="customRowTemplate"></ng-container>
+      }
+    </tbody>
+  </table>
+</div>
+} @else {
+<p class="text-center">No records found</p>
+} }
+
+<!-- Pagination -->
+@if (total > 0 && isPagination) {
+<div class="flex flex-col md:flex-row justify-between items-center mt-5">
+  <button
+    (click)="previousPage()"
+    [disabled]="currentPage === 1"
+    class="px-3 py-1 flex gap-2 items-center bg-white border rounded-lg mb-2 md:mb-0 cursor-pointer hover:text-skyblue hover:border-skyblue"
+  >
+    <img src="assets/icons/arrow.png" class="w-3 rotate-180" />
+    Previous
+  </button>
+
+  <div class="flex flex-wrap justify-center">
+    @for (page of visiblePages; track page) {
+    <button
+      (click)="goToPage(page)"
+      class="px-3 py-1 mx-1 bg-gray-200 rounded-lg"
+      [ngClass]="{
+        'text-skyblue bg-white border border-skyblue': currentPage === page
+      }"
+    >
+      {{ page }}
+    </button>
+    } @if (showEllipsis) {
+    <span class="px-3 py-1 mx-1">...</span>
+    } @if (totalPages > maxPageLimit) {
+    <button
+      (click)="goToPage(totalPages)"
+      class="px-3 py-1 mx-1 bg-gray-200 rounded-lg"
+      [ngClass]="{
+        'bg-blue-500 text-white': currentPage === totalPages
+      }"
+    >
+      {{ totalPages }}
+    </button>
+    }
+  </div>
+
+  <button
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages"
+    class="px-3 py-1 flex gap-2 items-center bg-white border rounded-lg mt-2 md:mt-0 cursor-pointer hover:text-skyblue hover:border-skyblue"
+  >
+    Next
+    <img src="assets/icons/arrow.png" class="w-3" />
+  </button>
+</div>
+}

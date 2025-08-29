@@ -1,0 +1,297 @@
+<div class="bg-white p-6 rounded-lg shadow-md">
+  <span class="flex justify-between mb-2">
+    <h2 class="text-xl font-semibold mb-4">All users</h2>
+    <button
+      class="text-skyblue bg-bgBlue px-4 py-2 rounded"
+      (click)="openModal()"
+    >
+      Create User
+    </button>
+  </span>
+
+  <app-table
+    [total]="total"
+    [loading]="loading"
+    [currentPage]="currentPage"
+    (search)="onSearch($event)"
+    (pageChange)="onPageChange($event)"
+  >
+    <thead *ngIf="users()?.length > 0">
+      <tr class="text-gray-600 bg-gray-200  text-sm leading-normal">
+        <th class="py-3 px-6 text-left rounded-l-lg">Name</th>
+        <th class="py-3 px-6 text-left">Mobile Number</th>
+        <th class="py-3 px-6 text-left">Email</th>
+        <th class="py-3 px-6 text-left">Date</th>
+        <th class="py-3 px-6 text-left">Status</th>
+        <th class="py-3 px-6 text-center rounded-r-lg">Action</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="users()?.length > 0">
+      <tr
+        *ngFor="let item of users()"
+        class="border-b border-gray-200 hover:bg-gray-100"
+      >
+        <td class="py-3 px-6 flex items-center">
+          <img
+            src="assets/img/avatar.png"
+            class="w-10 h-10 rounded-full mr-2"
+            alt="User"
+          />
+          {{ item.fullName }}
+        </td>
+        <td class="py-3 px-6">{{ item.msisdn }}</td>
+        <td class="py-3 px-6">{{ item.email }}</td>
+        <td class="py-3 px-6">
+          {{ item.createdAt | date : "dd-MM-yyyy HH:mm" }}
+        </td>
+        <td class="py-3 px-6">
+          <span
+            [ngClass]="{
+              'bg-green-100 text-green-600':
+                item.status === 'ACTIVE' || item.status === 'APPROVED',
+              'bg-red-100 text-red-600': item.status === 'REJECTED',
+              'bg-yellow-100 text-yellow-600': item.status === 'PENDING',
+              'bg-gray-100 text-gray-600': item.status === 'BLOCKED'
+            }"
+            class="px-2 py-1 text-sm rounded-lg"
+            >{{ item.status | titlecase }}</span
+          >
+        </td>
+        <td class="py-3 px-6 text-center gap-2 flex justify-center">
+          <a
+            href="javascript:void(0)"
+            class="text-skyblue underline"
+            (click)="onEdit(item)"
+            >Edit</a
+          >
+          <a
+            href="javascript:void(0)"
+            class="text-red-600 underline"
+            (click)="onDelete(item)"
+            >Delete</a
+          >
+        </td>
+      </tr>
+    </tbody>
+
+    <tbody *ngIf="users()?.length <= 0 && !loading">
+      <span class="flex flex-col items-center gap-2 py-24">
+        <img
+          src="assets/img/empty-folder.png"
+          alt="empty-folder"
+          width="100"
+          height="100"
+        />
+        <span class="text-lg font-semibold">No users here yet, sorry!</span>
+      </span>
+    </tbody>
+  </app-table>
+</div>
+
+<!-- Approve Modal -->
+<!-- <app-modal
+  [width]="'sm'"
+  [closeText]="'Cancel'"
+  [actionText]="'Approve'"
+  [isOpen]="isModalOpen && action === 'APPROVE'"
+  [modalAction]="handleApprove"
+  (closeModal)="closeModal()"
+>
+  <span
+    class="flex flex-col items-center justify-center w-full text-center gap-2"
+  >
+    <img src="assets/img/info-blue.png" alt="info" class="w-20 h-20" />
+    <p class="font-semibold text-xl">Approve Agent</p>
+    <p class="text-gray-600">
+      You are about to approve agent: {{ selectedUser?.name | titlecase }}
+    </p>
+  </span>
+</app-modal> -->
+
+<!-- Reject Modal -->
+<!-- <app-modal
+  [width]="'sm'"
+  [closeText]="'Cancel'"
+  [actionText]="'Reject'"
+  [isOpen]="isModalOpen && action === 'REJECT'"
+  [modalAction]="handleReject"
+  (closeModal)="closeModal()"
+>
+  <span
+    class="flex flex-col items-center justify-center w-full text-center gap-2"
+  >
+    <img src="assets/img/info-red.png" alt="info" class="w-20 h-20" />
+    <p class="font-semibold text-xl">Reject Agent</p>
+    <p class="text-gray-600">
+      You are about to reject agent: {{ selectedUser?.name | titlecase }}
+      <span class="block">Please kindly state your reasons.</span>
+    </p>
+
+    <span class="w-full flex flex-col items-start">
+      <label for="reason" class="mt-3">Reasons</label>
+      <textarea
+        name="reason"
+        id="reason"
+        [(ngModel)]="reason"
+        class="text-sm w-full"
+        rows="5"
+        (ngModelChange)="isReasonError = false"
+      ></textarea>
+      <small class="text-red-600" *ngIf="isReasonError"
+        >Please state your reason</small
+      >
+    </span>
+  </span>
+</app-modal> -->
+
+<!-- Confirm Modal for Unblock -->
+<app-modal
+  [title]="'Confirm'"
+  [loading]="eloading"
+  [isOpen]="isModalOpen && action === 'DELETE'"
+  [actionText]="'Confirm'"
+  (closeModal)="closeModal()"
+  [modalAction]="deleteUser"
+>
+  <p>Are you sure you want to delete {{ selectedUser?.fullName }}?</p>
+</app-modal>
+
+<!-- Create User Modal -->
+<app-modal
+  [title]="action==='CREATE' ? 'Create user' : 'Edit User'"
+  [loading]="loading"
+  [isOpen]="isModalOpen && (action === 'CREATE' || action ==='EDIT')"
+  [actionText]="'Save'"
+  (closeModal)="closeModal()"
+  [modalAction]="action==='CREATE' ? createUser : updateUser"
+>
+  <!-- Form -->
+  <form [formGroup]="createForm" class="space-y-4">
+    <!-- Name -->
+    <div>
+      <label>Name</label>
+      <input type="text" formControlName="name" placeholder="Enter name here" />
+      <small
+        class="text-red-500"
+        *ngIf="
+          createForm.controls['name'].invalid &&
+          createForm.controls['name'].touched
+        "
+      >
+        {{
+          createForm.controls["name"].hasError("required")
+            ? "Name is required"
+            : "Only letters and spaces are allowed"
+        }}
+      </small>
+    </div>
+
+    <!-- MSISDN -->
+    <div>
+      <label>Mobile Number</label>
+      <input type="text" formControlName="msisdn" placeholder="Enter MSISDN" />
+      <small
+        class="text-red-500"
+        *ngIf="
+          createForm.controls['msisdn'].invalid &&
+          createForm.controls['msisdn'].touched
+        "
+      >
+        {{
+          createForm.controls["msisdn"].hasError("required")
+            ? "MSISDN is required"
+            : "Must have 10 digits"
+        }}
+      </small>
+    </div>
+
+    <!-- Password & Confirm Password -->
+    <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label>Password</label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Enter password"
+          />
+          <small
+            class="text-red-500"
+            *ngIf="
+              createForm.controls['password'].invalid &&
+              createForm.controls['password'].touched
+            "
+          >
+            {{
+              createForm.controls["password"].hasError("required")
+                ? "Password is required"
+                : "Must be at least 10 characters with an uppercase, lowercase, number, and special character."
+            }}
+          </small>
+        </div>
+        <div>
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Confirm password"
+          />
+          <small
+            class="text-red-500"
+            *ngIf="
+              createForm.controls['confirmPassword'].invalid &&
+              createForm.controls['confirmPassword'].touched
+            "
+          >
+            {{
+              createForm.controls["confirmPassword"].hasError("required")
+                ? "Confirm Password is required"
+                : "Passwords do not match"
+            }}
+          </small>
+        </div>
+      </div> -->
+
+    <!-- Email -->
+    <div>
+      <label>Email</label>
+      <input
+        type="text"
+        formControlName="emailId"
+        placeholder="Enter Email ID"
+      />
+      <small
+        class="text-red-500"
+        *ngIf="
+          createForm.controls['emailId'].invalid &&
+          createForm.controls['emailId'].touched
+        "
+      >
+        {{
+          createForm.controls["emailId"].hasError("required")
+            ? "Eamil ID is required"
+            : createForm.controls["emailId"].hasError("invalidEmail") &&
+              "Email is not valid"
+        }}
+      </small>
+    </div>
+  </form>
+</app-modal>
+
+<!-- Success Modal -->
+<app-modal
+  [closeText]="'Close'"
+  [width]="'sm'"
+  [isOpen]="isModalOpen && action === 'SUCCESS'"
+  (closeModal)="closeModal()"
+>
+  <span
+    class="flex flex-col items-center justify-center w-full text-center gap-2"
+  >
+    <img src="assets/img/check.png" alt="info" class="w-20 h-20" />
+    <p class="font-semibold text-xl">User {{ action==='CREATE' ? 'Created' : 'Updated' }} Successfully</p>
+    <p class="text-gray-600 text-sm">
+      You’ve successfully {{ action==='CREATE' ? 'created' : 'updated' }} a user! You can now close this pop-up and
+      review the list.
+    </p>
+  </span>
+</app-modal>

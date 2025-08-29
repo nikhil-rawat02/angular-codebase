@@ -1,0 +1,103 @@
+<aside
+  class="custom-scrollbar overflow-y-scroll w-full md:w-64 bg-white text-gray-500 p-4 space-y-2 h-auto md:h-full flex-shrink-0 flex flex-col border-r border-lightGray"
+>
+  <!-- Logo -->
+  <div class="flex flex-row space-x-2">
+    <div class="flex justify-center items-center h-13 w-12 pb-2">
+      <img
+        src="assets/img/logo.png"
+        alt="UMS Logo"
+        class="w-full h-full"
+      />
+    </div>
+    <div>
+      <p class="text-lg font-semibold">UMS</p>
+      <p class="text-md">Portal Dashboard</p>
+    </div>
+
+  </div>
+
+  <nav class="flex-1 border-t">
+    <div>
+      <p class="text-sm text-gray-400 my-3">MAIN</p>
+    </div>
+    <ul class="text-sm ml-2">
+      <ng-container *ngFor="let item of menuItems">
+        <li
+          *ngIf="!item.children"
+          class="p-2 flex gap-2 items-center group cursor-pointer custom-hover my-1"
+          [routerLink]="[item.route]"
+          routerLinkActive="active"
+        >
+          <img [src]="item.icon" class="group-hover:hidden active-hidden" />
+          <img
+            [src]="item.iconActive"
+            class="hidden group-hover:block active-block"
+          />
+          <a href="javascript:void(0)">{{ item.label }}</a>
+        </li>
+
+        <li *ngIf="item.children" class="relative my-1">
+          <button
+            class="p-2 flex gap-2 items-center group w-full custom-hover"
+            (click)="toggleMenu(item)"
+          >
+            <img [src]="item.icon" class="group-hover:hidden active-hidden" />
+            <img
+              [src]="item.iconActive"
+              class="hidden group-hover:block active-block"
+            />
+            <span class="w-full flex justify-between items-center">
+              <span>{{ item.label }}</span>
+              <i
+                class="fa fa-chevron-right transition-transform duration-300"
+                [ngClass]="{
+                  'rotate-90': item.expanded
+                }"
+              ></i>
+            </span>
+          </button>
+
+          <ul
+            [@submenu]="item.expanded ? 'open' : 'closed'"
+            (@submenu.done)="onAnimationDone($event, item)"
+            class="bg-white rounded mt-1 space-y-2 px-2"
+          >
+            <ng-container *ngFor="let sub of item.children">
+              <li
+                class="p-2 submenu-hover border-l-2 pl-4 border-gray-300"
+                [routerLink]="[sub.route]"
+                routerLinkActive="active"
+              >
+                <a href="javascript:void(0)">{{ sub.label }}</a>
+              </li>
+              <!-- <li
+                *ngIf="sub.roles.includes(userRole)"
+                class="p-2 submenu-hover border-l-2 pl-4 border-gray-300"
+                [routerLink]="[sub.route]"
+                routerLinkActive="active"
+              >
+                <a href="javascript:void(0)">{{ sub.label }}</a>
+              </li> -->
+            </ng-container>
+          </ul>
+        </li>
+      </ng-container>
+    </ul>
+  </nav>
+
+  <!-- User Profile -->
+  <div
+    class="mt-auto flex items-center space-x-3 px-4 pt-4 rounded-lg border-lightGray border-t"
+  >
+    <img
+      src="assets/img/avatar.png"
+      alt="User"
+      class="w-10 h-10 rounded-full border-2 border-lightGray"
+    />
+    <span class="flex flex-col">
+      <span class="font-bold">{{ userProfile?.name | titlecase }}</span>
+      <span class="text-sm">{{ userRole | titlecase }}</span>
+    </span>
+  </div>
+</aside>

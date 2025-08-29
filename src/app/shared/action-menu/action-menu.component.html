@@ -1,0 +1,28 @@
+<div class="relative inline-block text-center">
+  <button (click)="toggleMenu()" class="p-2">
+    <img src="assets/img/action-menu.png" class="h-3" />
+  </button>
+
+  <div
+    *ngIf="showMenu"
+    class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+  >
+    <div class="py-2 text-sm text-gray-700">
+      <p class="px-4 py-2 text-gray-500 text-left font-semibold">Actions</p>
+      <ng-container *ngFor="let item of actions">
+        <button
+          (click)="select(item.action)"
+          class="flex items-center gap-2 w-full text-left px-4 py-2 hover:bg-gray-100"
+          [ngClass]="{
+            'text-red-500': item.type === 'danger',
+            'cursor-not-allowed': item.disable
+          }"
+          [disabled]="item.disable"
+        >
+          <img [src]="item.icon" alt="" class="w-4 h-4" />
+          {{ item.label }}
+        </button>
+      </ng-container>
+    </div>
+  </div>
+</div>

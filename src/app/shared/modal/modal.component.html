@@ -1,0 +1,61 @@
+<div
+  *ngIf="isOpen"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4"
+>
+  <div
+    class="bg-white rounded-lg shadow-lg p-6 w-full max-h-[92vh] relative overflow-visible"
+    [ngClass]="modalWidth"
+  >
+    <!-- Close Button (Always at Top Right) -->
+    <button
+      (click)="close()"
+      class="absolute top-4 right-6 text-gray-500 hover:text-gray-700 text-3xl"
+    >
+      &times;
+    </button>
+
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center border-b pb-2" *ngIf="title">
+      <h3 class="text-lg font-semibold" [ngClass]="title === 'Success' ? 'text-green-500 font-semibold' : title === 'Error' ? 'text-red-500 font-semibold': ''">{{ title }}</h3>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="py-4 max-h-[80vh] overflow-auto">
+      <ng-content></ng-content>
+    </div>
+
+    <!-- Modal Footer -->
+    <div
+      class="flex justify-end border-t pt-2 mt-2 space-x-2"
+      *ngIf="actionText || closeText || resetForm"
+    >
+      <button
+        *ngIf="closeText"
+        (click)="close()"
+        class="btn-secondary"
+      >
+        {{ closeText }}
+      </button>
+      <button
+        *ngIf="onReset"
+        (click)="reset()"
+        class="btn-secondary"
+      >
+        Reset
+      </button>
+      <button
+        *ngIf="actionText"
+        [disabled]="loading"
+        (click)="onAction()"
+        class="btn-primary w-max px-4"
+      >
+        <ng-container *ngIf="!loading; else spinner">{{
+          actionText
+        }}</ng-container>
+        <ng-template #spinner>
+          <app-spinner></app-spinner>
+        </ng-template>
+      </button>
+    </div>
+  </div>
+</div>

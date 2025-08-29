@@ -1,0 +1,48 @@
+::ng-deep button.clear svg {
+  display: none !important;
+}
+
+::ng-deep .md-drppicker .btn {
+  background-color: #4668c9 !important;
+  border-color: #4668c9 !important;
+}
+
+::ng-deep .md-drppicker .ranges button.active {
+  background-color: #4668c9 !important;
+  border-color: #4668c9 !important;
+}
+
+::ng-deep .md-drppicker .calendar-table .available.active,
+::ng-deep .md-drppicker .calendar-table .in-range {
+  background-color: #4668c9 !important;
+}
+
+::ng-deep .md-drppicker .active {
+  background-color: #4668c9 !important;
+}
+
+::ng-deep .md-drppicker .buttons .btn {
+  padding: 0 15px !important; /* Adjust horizontal padding */
+}
+
+::ng-deep .md-drppicker {
+  position: absolute; /* Default */
+  z-index: 1050;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* When Picker is Open, Move it to Center */
+.picker-open ::ng-deep .md-drppicker {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 1050 !important;
+  background: white;
+  padding: 10px;
+}
+.backdrop-blur-md {
+  backdrop-filter: blur(5px); /* Apply blur effect */
+}

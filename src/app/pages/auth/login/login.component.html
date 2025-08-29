@@ -1,0 +1,144 @@
+<div class="flex min-h-screen">
+  <!-- Left Section (Login Form) -->
+  <div class="w-full md:w-[50%] flex items-center justify-center bg-white">
+    <div class="w-full max-w-md p-6 mb-24">
+      <!-- Logo and Header -->
+      <!-- <div class="flex absolute top-4 left-8 gap-3 mb-6">
+        <img src="assets/img/logo.png" alt="SSR Logo" class="w-full h-16" />
+      </div> -->
+
+      <div class="flex flex-col items-center mb-6">
+        <img src="assets/img/logo.png" alt="User Icon" class="w-24 h-24" />
+        <h2 class="text-lg font-semibold mt-4">Login to your account</h2>
+        <p class="text-gray-500 text-sm mt-1">Enter your details to login.</p>
+      </div>
+
+      <!-- Login Form -->
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="submitLogin()"
+        class="space-y-6"
+      >
+        <!-- Mobile Number -->
+        <div>
+          <label class="block text-sm font-medium mb-1 required"
+            >Username</label
+          >
+          <input
+            type="text"
+            formControlName="username"
+            placeholder="Enter user name"
+            required minlength="5" maxlength="30"
+            class="w-full px-3 py-2 border rounded-md focus:ring focus:ring-blue-500 outline-none"
+          />
+          <div style="color: red;" *ngIf="loginForm.get('username')?.invalid && (loginForm.get('username')?.dirty || loginForm.get('username')?.touched)">
+						<small *ngIf="loginForm.get('username')?.errors?.['required']">
+							User name is required.
+						</small>
+						<small *ngIf="loginForm.get('username')?.errors?.['minlength']">
+							User Name should be 5 characters long.
+						</small>
+					</div>
+        </div>
+
+        <!-- Password -->
+        <div class="relative">
+          <label class="block text-sm font-medium mb-1 required"
+            >Password</label
+          >
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••••"
+            class="w-full px-3 py-2 border rounded-md focus:ring focus:ring-blue-500 outline-none"
+          />
+          <button
+            type="button"
+            (click)="togglePassword()"
+            class="absolute top-9 right-3"
+          >
+            <img
+              [src]="
+                showPassword ? 'assets/img/eye-off.png' : 'assets/img/eye.png'
+              "
+              alt="Toggle Password"
+              class="w-4 h-4"
+            />
+          </button>
+          <small
+            *ngIf="
+              loginForm.get('password')?.invalid &&
+              loginForm.get('password')?.touched
+            "
+            class="text-red-500"
+          >
+            Password is required
+          </small>
+        </div>
+
+        <div class="flex justify-between">
+          <label class="flex justify-start items-center gap-2 w-1/2 cursor-pointer">
+            <input
+              type="checkbox"
+              class="h-4 w-4"
+              [checked]="rememberMe()"
+              (change)="onRememberChange($event)"
+            />
+            <span class="text-sm text-gray-900">Remember me</span>
+          </label>
+          <a
+            routerLink="/reset-password"
+            class="text-sm text-gray-900 underline cursor-pointer"
+            (click)="onForget()"
+            >Forgot password?</a
+          >
+        </div>
+
+        <div class="text-center">
+          @if (errorMsg()) {
+            <small class="text-red-500 text-center">{{ errorMsg() }}</small>
+          }
+        </div>
+        <!-- Login Button -->
+        <button
+          type="submit"
+          class="btn-primary mt-5 w-full"
+          [disabled]="loginForm.invalid || loading()"
+        >
+          @if (!loading()) {
+            Login
+          } @else {
+            <app-spinner></app-spinner>
+          }
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div
+        class="mt-6 text-sm absolute bottom-0 left-0 w-[50%] py-4 px-8 text-gray-500 flex justify-between"
+      >
+        <span>© 2025 UMS</span>
+        <span><i class="fa fa-globe"></i> ENG</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Section -->
+  <div
+    class="hidden md:block w-[50%] relative bg-cover bg-center"
+    style="background-image: url('assets/img/login-bg.jpg')"
+  >
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-gray-900 bg-opacity-65"></div>
+
+    <!-- Quote Box -->
+    <div
+      class="absolute bottom-[5%] right-[18%] max-w-lg backdrop-blur-md bg-white/20 border border-white/30 text-white rounded-lg shadow-lg p-4"
+    >
+      <p class="text-md font-bold leading-relaxed">
+        Track performance, onboard instructors, assign roles, and unlock tools
+        that help your school scale effortlessly.
+      </p>
+    </div>
+  </div>
+</div>
